@@ -160,3 +160,28 @@ export async function deleteWorkspaceVectors(workspaceId: string) {
     await index.namespace(workspaceId).deleteAll();
 }
 
+/**
+ * Queries a workspace namespace for the most similar vectors to a query embedding.
+ *
+ * @param workspaceId - Pinecone namespace to search
+ * @param vector - Query embedding (1536 dimensions)
+ * @param topK - Maximum number of matches to return
+ * @returns Pinecone match objects with scores and metadata
+ *
+ */
+export async function queryWorkspaceVectors(
+    workspaceId: string,
+    vector: number[],
+    topK: number,
+) {
+    const index = await getPineconeIndex();
+    const result = await index.namespace(workspaceId).query({
+        vector,
+        topK,
+        includeMetadata: true,
+    });
+
+    return result.matches ?? [];
+}
+
+export { indexName as PINECONE_INDEX_NAME };
